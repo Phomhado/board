@@ -1,8 +1,17 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "types": ["jest", "@testing-library/jest-dom"],
-    "noEmit": true
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "types": ["jest", "@testing-library/jest-dom", "node"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "moduleResolution": "node",
+    "noEmit": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": [
     "src/**/*",
