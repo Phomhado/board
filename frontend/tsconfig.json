@@ -4,15 +4,8 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "compilerOptions": {
+    "compilerOptions": {
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "types": ["jest", "@testing-library/jest-dom"],
-    "typeRoots": ["./node_modules/@types", "./src/types"],
-    "baseUrl": "./",
-    "paths": {
-      "@styles/*": ["src/styles/*"],
-      "@components/*": ["src/components/*"]
-    }
   }
 }
