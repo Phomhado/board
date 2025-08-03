@@ -1,8 +1,29 @@
 [
   {
     "id": "d730f300-37d9-43c0-a1fd-8bff82ed8793",
-    "title": "Tarefa de teste",
-    "description": "Testando leitura do JSON",
-    "size": "M"
+    "title": "Configurar backend com CORS",
+    "description": "Testando leitura do JSON com suporte a colunas",
+    "size": "M",
+    "column": "doing",
+    "createdAt": "2025-01-01T10:00:00.000Z",
+    "updatedAt": "2025-08-03T19:21:28.846Z"
+  },
+  {
+    "id": "a830f300-37d9-43c0-a1fd-8bff82ed8794",
+    "title": "Implementar drag and drop",
+    "description": "Adicionar funcionalidade de arrastar e soltar tasks",
+    "size": "G",
+    "column": "todo",
+    "createdAt": "2025-01-01T11:00:00.000Z",
+    "updatedAt": "2025-08-03T19:21:55.924Z"
+  },
+  {
+    "id": "b930f300-37d9-43c0-a1fd-8bff82ed8795",
+    "title": "Criar testes unitários",
+    "description": "Implementar testes para componentes React",
+    "size": "GG",
+    "column": "test",
+    "createdAt": "2025-01-01T12:00:00.000Z",
+    "updatedAt": "2025-08-03T19:21:57.604Z"
   }
 ]
