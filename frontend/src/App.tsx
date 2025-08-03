@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './styles/theme';
 import { GlobalStyle } from './styles/global';
-import Board from './components/Board';
 import TaskModal from './components/TaskModal';
 import { useTasks } from './hooks/useTasks';
 import { ColumnType, Task, CreateTaskDTO, UpdateTaskDTO } from './types/tasks';
+import { Board } from './components';
 
 const LoadingSpinner = () => (
   <div style={{ 
