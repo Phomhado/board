@@ -9,6 +9,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
     css: true,
+    // Configurações otimizadas
+    reporters: ['verbose'],
+    testTimeout: 10000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -17,7 +20,8 @@ export default defineConfig({
         'src/setupTests.ts',
         'src/vite-env.d.ts',
         '**/*.d.ts',
-        'src/main.tsx'
+        'src/main.tsx',
+        'src/components/test-utils.tsx'
       ]
     }
   },

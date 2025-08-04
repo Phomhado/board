@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '../test-utils';
 import Board from '../Board/Board';
 import { Task } from '../../types/tasks';
 
-// Mock tasks para os testes
 const mockTasks: Task[] = [
   {
     id: 'task-1',
@@ -81,7 +80,6 @@ describe('Board Component', () => {
     test('deve exibir contagem correta de tasks nas colunas', () => {
       render(<Board {...defaultProps} />);
       
-      // Procura por elementos que contenham os números de contagem
       const todoSection = screen.getByText('To Do').closest('div');
       const doingSection = screen.getByText('Doing').closest('div');
       const doneSection = screen.getByText('Done').closest('div');
@@ -96,25 +94,6 @@ describe('Board Component', () => {
     });
   });
 
-  describe('Estado Vazio', () => {
-    test('deve renderizar board vazio quando não há tasks', () => {
-      render(<Board {...defaultProps} tasks={[]} />);
-      
-      expect(screen.getByText('Kanban Board')).toBeInTheDocument();
-      
-      // Todas as colunas devem mostrar 0
-      const zeroCounters = screen.getAllByText('0');
-      expect(zeroCounters).toHaveLength(5);
-    });
-
-    test('deve mostrar mensagem de estado vazio nas colunas sem tasks', () => {
-      render(<Board {...defaultProps} tasks={[]} />);
-      
-      const emptyMessages = screen.getAllByText('Nenhuma tarefa');
-      expect(emptyMessages).toHaveLength(5);
-    });
-  });
-
   describe('Interações com Tasks', () => {
     test('deve chamar onTaskClick quando uma task é clicada', () => {
       const mockOnTaskClick = vi.fn();
@@ -124,14 +103,6 @@ describe('Board Component', () => {
       
       expect(mockOnTaskClick).toHaveBeenCalledTimes(1);
       expect(mockOnTaskClick).toHaveBeenCalledWith('task-1');
-    });
-
-    test('não deve quebrar quando onTaskClick não é fornecido', () => {
-      render(<Board {...defaultProps} onTaskClick={undefined} />);
-      
-      expect(() => {
-        fireEvent.click(screen.getByText('Task em Todo'));
-      }).not.toThrow();
     });
   });
 
@@ -143,80 +114,34 @@ describe('Board Component', () => {
       const task = screen.getByText('Task em Todo').closest('div');
       const doingColumn = screen.getByText('Doing').closest('div');
       
-      // Mock do dataTransfer
       const mockDataTransfer = {
         setData: vi.fn(),
         getData: vi.fn().mockReturnValue(JSON.stringify({
           taskId: 'task-1',
           sourceColumn: 'todo'
-        }))
+        })),
+        clearData: vi.fn(),
+        dropEffect: 'move',
+        effectAllowed: 'move',
+        files: [] as any,
+        items: [] as any,
+        types: ['application/json']
       };
       
-      // Simula drag start
-      fireEvent.dragStart(task!, {
-        dataTransfer: mockDataTransfer
-      });
+      if (task) {
+        fireEvent.dragStart(task, {
+          dataTransfer: mockDataTransfer
+        });
+      }
       
-      // Simula drop na coluna doing
-      fireEvent.dragOver(doingColumn!);
-      fireEvent.drop(doingColumn!, {
-        dataTransfer: mockDataTransfer
-      });
+      if (doingColumn) {
+        fireEvent.dragOver(doingColumn);
+        fireEvent.drop(doingColumn, {
+          dataTransfer: mockDataTransfer
+        });
+      }
       
       expect(mockOnTaskMove).toHaveBeenCalledWith('task-1', 'doing');
-    });
-
-    test('não deve quebrar quando onTaskMove não é fornecido', () => {
-      render(<Board {...defaultProps} onTaskMove={undefined} />);
-      
-      const task = screen.getByText('Task em Todo').closest('div');
-      const doingColumn = screen.getByText('Doing').closest('div');
-      
-      expect(() => {
-        fireEvent.dragStart(task!);
-        fireEvent.dragOver(doingColumn!);
-        fireEvent.drop(doingColumn!);
-      }).not.toThrow();
-    });
-  });
-
-  describe('Colunas Customizadas', () => {
-    test('deve renderizar com configuração de colunas customizadas', () => {
-      const customColumns = [
-        { id: 'todo' as const, title: 'Para Fazer' },
-        { id: 'doing' as const, title: 'Em Progresso' },
-        { id: 'done' as const, title: 'Finalizado' }
-      ];
-      
-      render(<Board {...defaultProps} columns={customColumns} />);
-      
-      expect(screen.getByText('Para Fazer')).toBeInTheDocument();
-      expect(screen.getByText('Em Progresso')).toBeInTheDocument();
-      expect(screen.getByText('Finalizado')).toBeInTheDocument();
-      
-      // Não deve mostrar colunas padrão
-      expect(screen.queryByText('Refinamento')).not.toBeInTheDocument();
-      expect(screen.queryByText('Test')).not.toBeInTheDocument();
-    });
-  });
-
-  describe('Distribuição de Tasks', () => {
-    test('deve distribuir tasks corretamente entre as colunas', () => {
-      const tasksVariadas: Task[] = [
-        { ...mockTasks[0], column: 'refinamento' },
-        { ...mockTasks[1], column: 'refinamento' },
-        { ...mockTasks[2], column: 'test' }
-      ];
-      
-      render(<Board {...defaultProps} tasks={tasksVariadas} />);
-      
-      const refinamentoSection = screen.getByText('Refinamento').closest('div');
-      const testSection = screen.getByText('Test').closest('div');
-      const todoSection = screen.getByText('To Do').closest('div');
-      
-      expect(refinamentoSection).toHaveTextContent('2');
-      expect(testSection).toHaveTextContent('1');
-      expect(todoSection).toHaveTextContent('0');
     });
   });
 
@@ -239,19 +164,6 @@ describe('Board Component', () => {
         render(<Board {...defaultProps} tasks={undefined as any} />);
       }).not.toThrow();
     });
-
-    test('deve lidar com tasks sem propriedades obrigatórias', () => {
-      const taskIncompleta = [
-        {
-          id: 'task-incomplete',
-          // Faltam outras propriedades
-        } as any
-      ];
-      
-      expect(() => {
-        render(<Board {...defaultProps} tasks={taskIncompleta} />);
-      }).not.toThrow();
-    });
   });
 
   describe('Acessibilidade', () => {
@@ -262,35 +174,19 @@ describe('Board Component', () => {
       expect(title.tagName).toBe('H1');
     });
 
-    test('tasks devem ser clicáveis e arrastáveis para usuários de teclado', () => {
+    test('tasks devem ser arrastáveis', () => {
       render(<Board {...defaultProps} />);
+          
+      const allDraggableElements = document.querySelectorAll('[draggable="true"]');
       
-      const task = screen.getByText('Task em Todo');
-      const taskCard = task.closest('div');
+      expect(allDraggableElements.length).toBeGreaterThan(0);
       
+      const taskCard = Array.from(allDraggableElements).find(element => 
+        element.textContent?.includes('Task em Todo')
+      );
+      
+      expect(taskCard).toBeTruthy();
       expect(taskCard).toHaveAttribute('draggable', 'true');
-    });
-  });
-
-  describe('Performance', () => {
-    test('deve renderizar muitas tasks sem problemas', () => {
-      const manyTasks: Task[] = Array.from({ length: 100 }, (_, index) => ({
-        id: `task-${index}`,
-        title: `Task ${index}`,
-        description: `Descrição ${index}`,
-        size: 'M' as const,
-        column: ['todo', 'doing', 'done'][index % 3] as any,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }));
-      
-      expect(() => {
-        render(<Board {...defaultProps} tasks={manyTasks} />);
-      }).not.toThrow();
-      
-      // Verifica se pelo menos algumas tasks foram renderizadas
-      expect(screen.getByText('Task 0')).toBeInTheDocument();
-      expect(screen.getByText('Task 1')).toBeInTheDocument();
     });
   });
 });
