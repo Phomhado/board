@@ -1,2 +1,2 @@
 export { default } from './Board';
-export type { BoardProps, Column } from './types';
+export type { BoardProps, BoardColumn } from './types';
